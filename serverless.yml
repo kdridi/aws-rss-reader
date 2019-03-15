@@ -13,6 +13,14 @@
 
 service: hello-world # NOTE: update this with your service name
 
+#plugins:
+#  - serverless-localstack
+#
+#custom:
+#  localstack:
+#    host: http://localhost
+#    endpointFile: localstack_endpoints.json
+
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
@@ -20,6 +28,9 @@ service: hello-world # NOTE: update this with your service name
 provider:
   name: aws
   runtime: java8
+  region: eu-west-3
+  stage: dev
+  profile: serverless-admin
 
 # you can overwrite defaults here
 #  stage: dev
@@ -50,8 +61,26 @@ package:
   artifact: target/hello-dev.jar
 
 functions:
+  feed-fetch:
+    handler: com.serverless.FeedFetchHandler
+    events:
+      - http:
+          path: feed/fetch
+          method: post
+          cors: true
   hello:
     handler: com.serverless.Handler
+    memorySize: 256
+    timeout: 30
+  hello-bis:
+    handler: com.serverless.HandlerBis
+    memorySize: 512
+    timeout: 30
+    events:
+      - http:
+          path: hello
+          method: get
+          cors: true
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
